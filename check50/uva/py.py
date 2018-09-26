@@ -1,4 +1,4 @@
-from check50.py import import_
+from check50.py import import_, compile
 import contextlib
 import io
 
