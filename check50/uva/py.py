@@ -7,6 +7,11 @@ import pathlib
 import attr
 import imp
 
+class PythonException(check50.api.Failure):
+	def __init__(self, exception):
+		super().__init__(f"{exception.__class__.__name__}: {str(exception)} occured")
+		self.exception = exception
+
 @attr.s(frozen=True, slots=True)
 class Result:
 	stdout = attr.ib()
@@ -81,6 +86,8 @@ def run(path, argv=tuple(), stdin=tuple(), set_attributes=(("__name__", "__main_
 			exec(src, mod.__dict__)
 		except EOFError:
 			raise check50.Failure("You read too much input from stdin")
+		except BaseException as e:
+			raise PythonException(e)
 
 		# add resulting module to sys
 		sys.modules[moduleName] = mod
