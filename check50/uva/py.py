@@ -61,7 +61,7 @@ def run(path, argv=tuple(), stdin=tuple(), set_attributes=(("__name__", "__main_
 	if not argv:
 		argv = sys.argv
 
-	with capture_stdout() as stdout_stream, capture_stdin() as stdin_stream, set_argv(argv):
+	with capture_stdout() as stdout_stream, capture_stdin() as stdin_stream, set_argv(*argv):
 		# fill stdin with args
 		if stdin:
 			for arg in stdin:
