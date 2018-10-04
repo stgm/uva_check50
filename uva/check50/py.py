@@ -39,7 +39,7 @@ def capture_stdin():
 @contextlib.contextmanager
 def set_argv(*args):
 	old_argv = sys.argv
-	sys.argv = args
+	sys.argv = list(args)
 	yield sys.argv
 	sys.argv = old_argv
 

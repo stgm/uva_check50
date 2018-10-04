@@ -16,5 +16,5 @@ setup(
     packages=["uva.check50"],
     python_requires=">= 3.6",
     url="https://github.com/jelleas/uva_check50",
-    version="0.0.1",
+    version="0.0.2",
 )
