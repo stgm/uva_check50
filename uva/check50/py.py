@@ -6,11 +6,15 @@ import sys
 import pathlib
 import attr
 import imp
+import subprocess
 
 class PythonException(check50.api.Failure):
 	def __init__(self, exception):
 		super().__init__(f"{exception.__class__.__name__}: {str(exception)} occured")
 		self.exception = exception
+
+class NotebookError(check50.api.Failure):
+	pass
 
 @attr.s(frozen=True, slots=True)
 class Result:
@@ -48,6 +52,25 @@ def source(path):
 	with open(path) as f:
 		source = f.read()
 	return source
+
+def nbconvert(notebook, dest=None):
+	notebook = pathlib.Path(notebook)
+	if dest == None:
+		dest = notebook.with_suffix('')
+	else:
+		dest = pathlib.Path(dest).with_suffix('')
+
+	# convert notebook
+	if subprocess.call(['jupyter', 'nbconvert', '--to', 'script', notebook, "--output", dest]) != 0:
+		raise NotebookError("Could not convert notebook.")
+
+	dest = dest.with_suffix(".py")
+
+	# remove all magic lines
+	with open(dest, "r") as f:
+		lines = f.readlines()
+	with open(dest, "w") as f:
+		f.write("".join([l for l in lines if "get_ipython" not in l]))
 
 def run(path, argv=tuple(), stdin=tuple(), set_attributes=(("__name__", "__main__"),)):
 	"""
