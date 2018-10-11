@@ -60,6 +60,8 @@ def nbconvert(notebook, dest=None):
 	else:
 		dest = pathlib.Path(dest).with_suffix('')
 
+	check50.api.log(f"converting {notebook} to {dest.with_suffix('.py')}")
+
 	# convert notebook
 	if subprocess.call(['jupyter', 'nbconvert', '--to', 'script', notebook, "--output", dest]) != 0:
 		raise NotebookError("Could not convert notebook.")
@@ -98,6 +100,7 @@ def run(path, argv=tuple(), stdin=tuple(), set_attributes=(("__name__", "__main_
 
 		moduleName = path.stem
 
+		check50.api.log(f"importing {moduleName}")
 		mod = imp.new_module(moduleName)
 
 		# overwrite attributes
