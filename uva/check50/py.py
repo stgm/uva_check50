@@ -1,5 +1,5 @@
 from check50.py import import_, compile
-import check50.api
+import check50
 import contextlib
 import io
 import sys
@@ -8,12 +8,12 @@ import attr
 import imp
 import subprocess
 
-class PythonException(check50.api.Failure):
+class PythonException(check50.Failure):
 	def __init__(self, exception):
 		super().__init__(f"{exception.__class__.__name__}: {str(exception)} occured")
 		self.exception = exception
 
-class NotebookError(check50.api.Failure):
+class NotebookError(check50.Failure):
 	pass
 
 @attr.s(frozen=True, slots=True)
@@ -24,7 +24,7 @@ class Result:
 
 class _Stdin(io.StringIO):
 	def write(self, text):
-		check50.api.log("writing {} to stdin".format(text.replace('\n', '\\n')))
+		check50.log("writing {} to stdin".format(text.replace('\n', '\\n')))
 		super().write(text)
 
 @contextlib.contextmanager
@@ -60,7 +60,7 @@ def nbconvert(notebook, dest=None):
 	else:
 		dest = pathlib.Path(dest).with_suffix('')
 
-	check50.api.log(f"converting {notebook} to {dest.with_suffix('.py')}")
+	check50.log(f"converting {notebook} to {dest.with_suffix('.py')}")
 
 	# convert notebook
 	if subprocess.call(['jupyter', 'nbconvert', '--to', 'script', notebook, "--output", dest]) != 0:
@@ -100,7 +100,7 @@ def run(path, argv=tuple(), stdin=tuple(), set_attributes=(("__name__", "__main_
 
 		moduleName = path.stem
 
-		check50.api.log(f"importing {moduleName}")
+		check50.log(f"importing {moduleName}")
 		mod = imp.new_module(moduleName)
 
 		# overwrite attributes
