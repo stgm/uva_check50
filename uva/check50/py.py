@@ -63,7 +63,7 @@ def nbconvert(notebook, dest=None):
 	check50.log(f"converting {notebook} to {dest.with_suffix('.py')}")
 
 	# convert notebook
-	if subprocess.call(['python3', '-m', 'nbconvert', '--to', 'script', notebook, "--output", dest]) != 0:
+	if subprocess.call([sys.executable, '-m', 'nbconvert', '--to', 'script', notebook, "--output", dest]) != 0:
 		raise NotebookError("Could not convert notebook.")
 
 	dest = dest.with_suffix(".py")
