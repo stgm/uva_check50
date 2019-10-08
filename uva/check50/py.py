@@ -65,7 +65,7 @@ def nbconvert(notebook, dest=None):
 
 	# convert notebook
 	with open(os.devnull, "w") as devnull:
-		if subprocess.call([sys.executable, '-m', 'nbconvert', '--to', 'script', notebook, "--output", dest], stdout=devnull) != 0:
+		if subprocess.call([sys.executable, '-m', 'nbconvert', '--to', 'script', notebook, "--output", dest], stdout=devnull, stderr=devnull) != 0:
 			raise NotebookError("Could not convert notebook.")
 
 	dest = dest.with_suffix(".py")
