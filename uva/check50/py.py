@@ -5,6 +5,7 @@ import io
 import sys
 import pathlib
 import attr
+import os
 import imp
 import subprocess
 
@@ -63,8 +64,9 @@ def nbconvert(notebook, dest=None):
 	check50.log(f"converting {notebook} to {dest.with_suffix('.py')}")
 
 	# convert notebook
-	if subprocess.call([sys.executable, '-m', 'nbconvert', '--to', 'script', notebook, "--output", dest]) != 0:
-		raise NotebookError("Could not convert notebook.")
+	with open(os.devnull, "w") as devnull:
+		if subprocess.call([sys.executable, '-m', 'nbconvert', '--to', 'script', notebook, "--output", dest], stdout=devnull) != 0:
+			raise NotebookError("Could not convert notebook.")
 
 	dest = dest.with_suffix(".py")
 
