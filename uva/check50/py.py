@@ -148,16 +148,19 @@ def validate_html(file, strict=False):
 	headers = {"Content-type": "text/html; charset=utf-8", "Accept": "application/json"}
 	timeout = 10
 
+	error_message = "validator returned an unexpected error, please contact your TA"
+	unvailable_message = "validator unavailable, please try again later or contact your TA"
+
 	# run validator service
 	check50.log("Running W3C validator.")
 	try:
 		request = requests.post(private_url, data=data, headers=headers, timeout=timeout)
 	except requests.exceptions.Timeout:
 		check50.log("validator timed out")
-		except check50.log(f"validator unavailable, please try again later or contact your TA")
+		raise check50.Failure(unavailable_message)
 	except Exception as e:
-		check50.log(f"request returned an exception: {e}")
-		except check50.log(f"validator caused an unexpected error, please contact your TA")
+		check50.log(f"request raised an exception: {e}")
+		raise check50.Failure(error_message)
 
 	# get JSON response
 	response_data = request.json()
@@ -165,7 +168,7 @@ def validate_html(file, strict=False):
 	# catch unexpected API errors
 	if request.status_code != 200:
 		check50.log(f"Validator unexpectedly returned status code {request.status_code}. {response_data["reason"]}")
-		except check50.log(f"validator caused an unexpected error, please contact your TA"")
+		raise check50.Failure(error_message)
 	
 	# start with no errors and warnings
 	error_count = 0
@@ -176,11 +179,16 @@ def validate_html(file, strict=False):
 		error_count += 1 if message["type"] == "error"
 		warning_count += 1 if message["type"] == "info" and message["subtype"] == "warning"
 
+		# handle non-document errors
+		if message["type"] == "non-document-error":
+			check50.log(f"validator returned a non-document-error: {message["message"]}")
+			raise check50.Failure(error_message)
+
 	check50.log(f"Found {error_count} errors and {warning_count} warnings.")
 	hint = f"validate your HTML yourself and view the detailed errors and warnings at {url}"
 
 	# throw exceptions if HTML is invalid
 	if strict and (warning_count > 0 or error_count > 0):
-		except check50.failure(f"validator returned {error_count} errors and {warning_count} warnings", hint=hint)
+		raise check50.Failure(f"validator returned {error_count} errors and {warning_count} warnings", hint=hint)
 	elif error_count > 0:
-		except check50.failure(f"validator returned {error_count} errors", hint=hint)
+		raise check50.Failure(f"validator returned {error_count} errors", hint=hint)
