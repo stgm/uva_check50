@@ -8,6 +8,8 @@ import attr
 import os
 import imp
 import subprocess
+import requests
+import json
 
 class PythonException(check50.Failure):
 	def __init__(self, exception):
@@ -128,3 +130,47 @@ def run(path, argv=tuple(), stdin=tuple(), set_attributes=(("__name__", "__main_
 		#		setattr(mod, name, function.Function(func))
 
 	return Result(stdout=stdout_stream.getvalue(), stdin=stdin_stream.read(), module=mod)
+
+def validate_html(file, strict=False):
+	"""
+	Validate the HTML in the provided file using the W3C Validation Service
+	Returns a check50.failure exception if the HTML is invalid
+	file: the path to the file to validate
+	strict: whether or not warnings should raise a failure exception
+	"""
+
+	# read file
+	data = open(file, 'rb').read()
+
+	# url, headers, timeout
+	url = "https://validator.w3.org/nu/"
+	private_url = url + "?out=json"
+	headers = {"Content-type": "text/html; charset=utf-8", "Accept": "application/json"}
+	timeout = 10
+
+	# run validator service
+	check50.log("Running W3C validator.")
+	request = requests.post(private_url, data=data, headers=headers, timeout=timeout)
+
+	# catch unexpected API errors
+	if request.status_code != 200:
+		check50.log(f"Validator unexpectedly returned status code {request.status_code}.")
+	
+	# get response, start with no errors and warnings
+	response_data = request.json()
+	error_count = 0
+	warning_count = 0
+
+	# get each message, count errors and warnings
+	for message in response_data["messages"]:
+		error_count += 1 if message["type"] == "error"
+		warning_count += 1 if message["type"] == "info" and message["subtype"] == "warning"
+
+	check50.log(f"Found {error_count} errors and {warning_count} warnings.")
+	hint = f"validate your HTML yourself and view the detailed errors and warnings at {url}"
+
+	# throw exceptions if HTML is invalid
+	if strict and (warning_count > 0 or error_count > 0):
+		except check50.failure(f"validator returned {error_count} errors and {warning_count} warnings", hint=hint)
+	elif error_count > 0:
+		except check50.failure(f"validator returned {error_count} errors", hint=hint)
