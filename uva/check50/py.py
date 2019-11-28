@@ -150,14 +150,24 @@ def validate_html(file, strict=False):
 
 	# run validator service
 	check50.log("Running W3C validator.")
-	request = requests.post(private_url, data=data, headers=headers, timeout=timeout)
+	try:
+		request = requests.post(private_url, data=data, headers=headers, timeout=timeout)
+	except requests.exceptions.Timeout:
+		check50.log("validator timed out")
+		except check50.log(f"validator unavailable, please try again later or contact your TA")
+	except Exception as e:
+		check50.log(e)
+		except check50.log(f"validator caused an unexpected error, please contact your TA")
+
+	# get JSON response
+	response_data = request.json()
 
 	# catch unexpected API errors
 	if request.status_code != 200:
-		check50.log(f"Validator unexpectedly returned status code {request.status_code}.")
+		check50.log(f"Validator unexpectedly returned status code {request.status_code}. {response_data["reason"]}")
+		except check50.log(f"validator caused an unexpected error, please contact your TA"")
 	
-	# get response, start with no errors and warnings
-	response_data = request.json()
+	# start with no errors and warnings
 	error_count = 0
 	warning_count = 0
 
