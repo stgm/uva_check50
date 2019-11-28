@@ -156,7 +156,7 @@ def validate_html(file, strict=False):
 		check50.log("validator timed out")
 		except check50.log(f"validator unavailable, please try again later or contact your TA")
 	except Exception as e:
-		check50.log(e)
+		check50.log(f"request returned an exception: {e}")
 		except check50.log(f"validator caused an unexpected error, please contact your TA")
 
 	# get JSON response
