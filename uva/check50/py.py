@@ -131,16 +131,20 @@ def run(path, argv=tuple(), stdin=tuple(), set_attributes=(("__name__", "__main_
 
 	return Result(stdout=stdout_stream.getvalue(), stdin=stdin_stream.read(), module=mod)
 
-def validate_html(file, strict=False):
+def validate_html(file_html, strict=False, prefix=""):
 	"""
 	Validate the HTML in the provided file using the W3C Validation Service
 	Returns a check50.failure exception if the HTML is invalid
-	file: the path to the file to validate
+	file_html: the path to the file to validate, or the raw html to validate
 	strict: whether or not warnings should raise a failure exception
 	"""
 
-	# read file
-	data = open(file, 'rb').read()
+	# check whether file or html was provided
+	if(os.path.exists(f"./{file_html}")):
+		# file
+		data = open(file, 'r').read()
+	else:
+		data = file_html
 
 	# url, headers, timeout
 	url = "https://validator.w3.org/nu/"
@@ -148,18 +152,18 @@ def validate_html(file, strict=False):
 	headers = {"Content-type": "text/html; charset=utf-8", "Accept": "application/json"}
 	timeout = 10
 
-	error_message = "validator returned an unexpected error, please contact your TA"
-	unvailable_message = "validator unavailable, please try again later or contact your TA"
+	error_message = prefix + "validator returned an unexpected error, please contact your TA"
+	unvailable_message = prefix + "validator unavailable, please try again later or contact your TA"
 
 	# run validator service
-	check50.log("Running W3C validator.")
+	check50.log(prefix + "Running W3C validator.")
 	try:
 		request = requests.post(private_url, data=data, headers=headers, timeout=timeout)
 	except requests.exceptions.Timeout:
-		check50.log("validator timed out")
+		check50.log(prefix + "validator timed out")
 		raise check50.Failure(unavailable_message)
 	except Exception as e:
-		check50.log(f"request raised an exception: {e}")
+		check50.log(prefix + f"request raised an exception: {e}")
 		raise check50.Failure(error_message)
 
 	# get JSON response
@@ -167,7 +171,7 @@ def validate_html(file, strict=False):
 
 	# catch unexpected API errors
 	if request.status_code != 200:
-		check50.log(f"Validator unexpectedly returned status code {request.status_code}. {response_data["reason"]}")
+		check50.log(prefix + f"Validator unexpectedly returned status code {request.status_code}. {response_data["reason"]}")
 		raise check50.Failure(error_message)
 	
 	# start with no errors and warnings
@@ -181,14 +185,14 @@ def validate_html(file, strict=False):
 
 		# handle non-document errors
 		if message["type"] == "non-document-error":
-			check50.log(f"validator returned a non-document-error: {message["message"]}")
+			check50.log(prefix + f"validator returned a non-document-error: {message["message"]}")
 			raise check50.Failure(error_message)
 
-	check50.log(f"Found {error_count} errors and {warning_count} warnings.")
+	check50.log(prefix + f"Found {error_count} errors and {warning_count} warnings.")
 	hint = f"validate your HTML yourself and view the detailed errors and warnings at {url}"
 
 	# throw exceptions if HTML is invalid
 	if strict and (warning_count > 0 or error_count > 0):
-		raise check50.Failure(f"validator returned {error_count} errors and {warning_count} warnings", hint=hint)
+		raise check50.Failure(prefix + f"validator returned {error_count} errors and {warning_count} warnings", hint=hint)
 	elif error_count > 0:
-		raise check50.Failure(f"validator returned {error_count} errors", hint=hint)
+		raise check50.Failure(prefix + f"validator returned {error_count} errors", hint=hint)
