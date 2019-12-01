@@ -182,8 +182,10 @@ def validate_html(file_html, strict=False, prefix=""):
 
 	# get each message, count errors and warnings
 	for message in response_data["messages"]:
-		error_count += 1 if message["type"] == "error"
-		warning_count += 1 if message["type"] == "info" and message["subtype"] == "warning"
+		if message["type"] == "error":
+			error_count += 1
+		if message["type"] == "info" and message["subtype"] == "warning":
+			warning_count += 1
 
 		# handle non-document errors
 		if message["type"] == "non-document-error":
