@@ -146,7 +146,7 @@ def validate_html(file_html, strict=False, prefix=""):
 		data = open(file, 'rb').read()
 	else:
 		# raw html
-		data = str.encode(file_html)
+		data = file_html.encode()
 
 	# url, headers, timeout
 	url = "https://validator.w3.org/nu/"
