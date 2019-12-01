@@ -197,6 +197,6 @@ def validate_html(file_html, strict=False, prefix=""):
 
 	# throw exceptions if HTML is invalid
 	if strict and (warning_count > 0 or error_count > 0):
-		raise check50.Failure(prefix + f"validator returned {error_count} errors and {warning_count} warnings", hint=hint)
+		raise check50.Failure(prefix + f"validator returned {error_count} errors and {warning_count} warnings", help=hint)
 	elif error_count > 0:
-		raise check50.Failure(prefix + f"validator returned {error_count} errors", hint=hint)
+		raise check50.Failure(prefix + f"validator returned {error_count} errors", help=hint)
