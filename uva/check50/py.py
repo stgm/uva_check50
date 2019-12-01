@@ -137,6 +137,7 @@ def validate_html(file_html, strict=False, prefix=""):
 	Returns a check50.failure exception if the HTML is invalid
 	file_html: the path to the file to validate, or the raw html to validate
 	strict: whether or not warnings should raise a failure exception
+	prefix: a prefix to add to log and failure messages
 	"""
 
 	# check whether file or html was provided
