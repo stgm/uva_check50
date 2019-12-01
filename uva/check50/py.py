@@ -182,9 +182,6 @@ def validate_html(file_html, strict=False, prefix=""):
 
 	# get each message, count errors and warnings
 	for message in response_data["messages"]:
-		# debug
-		check50.log(message['firstLine'] + ' ' + message['message'])
-
 		if message["type"] == "error":
 			error_count += 1
 		if message["type"] == "info":
