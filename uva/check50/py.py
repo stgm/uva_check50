@@ -143,10 +143,10 @@ def validate_html(file_html, strict=False, prefix=""):
 	# check whether file or html was provided
 	if(os.path.exists(f"./{file_html}")):
 		# file
-		data = open(file, 'r').read()
+		data = open(file, 'rb').read()
 	else:
 		# raw html
-		data = file_html
+		data = str.encode(file_html)
 
 	# url, headers, timeout
 	url = "https://validator.w3.org/nu/"
