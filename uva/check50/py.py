@@ -173,7 +173,7 @@ def validate_html(file_html, strict=False, prefix=""):
 
 	# catch unexpected API errors
 	if request.status_code != 200:
-		check50.log(prefix + f"Validator unexpectedly returned status code {request.status_code}. {response_data["reason"]}")
+		check50.log(prefix + f"Validator unexpectedly returned status code {request.status_code}. {response_data['reason']}")
 		raise check50.Failure(error_message)
 	
 	# start with no errors and warnings
