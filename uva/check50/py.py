@@ -144,6 +144,7 @@ def validate_html(file_html, strict=False, prefix=""):
 		# file
 		data = open(file, 'r').read()
 	else:
+		# raw html
 		data = file_html
 
 	# url, headers, timeout
