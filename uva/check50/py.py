@@ -187,7 +187,7 @@ def validate_html(file_html, strict=False, prefix=""):
 
 		# handle non-document errors
 		if message["type"] == "non-document-error":
-			check50.log(prefix + f"validator returned a non-document-error: {message["message"]}")
+			check50.log(prefix + f"validator returned a non-document-error: {message['message']}")
 			raise check50.Failure(error_message)
 
 	check50.log(prefix + f"Found {error_count} errors and {warning_count} warnings.")
