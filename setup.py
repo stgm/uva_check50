@@ -10,11 +10,11 @@ setup(
         "Topic :: Utilities"
     ],
     description="This is University of Amsterdam's check50 extension.",
-    install_requires=["check50>=3.0.0"],
+    install_requires=["check50>=3.0.0", "requests>=2.22.0"],
     keywords=["check", "check50", "uva"],
     name="uva.check50",
     packages=["uva.check50"],
     python_requires=">= 3.6",
     url="https://github.com/jelleas/uva_check50",
-    version="0.0.3",
+    version="0.0.4",
 )
