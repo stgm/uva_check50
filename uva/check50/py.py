@@ -89,11 +89,12 @@ def run(path, argv=tuple(), stdin=tuple(), set_attributes=(("__name__", "__main_
 	path = pathlib.Path(path)
 	src = source(path)
 	tree = ast.parse(src)
-	code = compile(p, "mod.py", 'exec')
 
 	for node in tree.body[:]:
     	if not isinstance(node, ast.FunctionDef):
         	tree.body.remove(node)
+
+	code = compile(p, "mod.py", 'exec')
 
 	mod = None
 	output = ""
