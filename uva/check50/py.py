@@ -91,8 +91,8 @@ def run(path, argv=tuple(), stdin=tuple(), set_attributes=(("__name__", "__main_
 	tree = ast.parse(src)
 
 	for node in tree.body[:]:
-    	if not isinstance(node, ast.FunctionDef):
-        	tree.body.remove(node)
+		if not isinstance(node, ast.FunctionDef):
+			tree.body.remove(node)
 
 	code = compile(p, "mod.py", 'exec')
 
