@@ -94,7 +94,7 @@ def run(path, argv=tuple(), stdin=tuple(), set_attributes=(("__name__", "__main_
 		if not isinstance(node, ast.FunctionDef):
 			tree.body.remove(node)
 
-	code = compile(tree, "mod.py", 'exec')
+	code = compile(tree)
 
 	mod = None
 	output = ""
