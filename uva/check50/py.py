@@ -8,6 +8,8 @@ import attr
 import os
 import imp
 import subprocess
+import ast
+import types
 
 class PythonException(check50.Failure):
 	def __init__(self, exception):
@@ -86,6 +88,12 @@ def run(path, argv=tuple(), stdin=tuple(), set_attributes=(("__name__", "__main_
 
 	path = pathlib.Path(path)
 	src = source(path)
+	tree = ast.parse(src)
+	code = compile(p, "mod.py", 'exec')
+
+	for node in tree.body[:]:
+    	if not isinstance(node, ast.FunctionDef):
+        	tree.body.remove(node)
 
 	mod = None
 	output = ""
@@ -111,7 +119,7 @@ def run(path, argv=tuple(), stdin=tuple(), set_attributes=(("__name__", "__main_
 
 		try:
 			# execute code in mod
-			exec(src, mod.__dict__)
+			exec(code, mod.__dict__)
 		except EOFError:
 			raise check50.Failure("You read too much input from stdin")
 		except BaseException as e:
